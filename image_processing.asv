@@ -1,0 +1,50 @@
+%image processing
+%Donggeon Kim - u1419226    
+%optical chracter recognition (OCR) from Vision toolbox of Matlab is used 
+% I= imread ('452.png');
+% result = ocr(I, 'TextLayout', 'Line','characterSet','0123456789');
+% outputNum=str2double(result.Text);
+
+%My MP4 file from S25 uses the HEVC (H.265) codec, which is not supported by MATLAB's VideoReader. MATLAB supports H.264 (AVC) but not HEVC.
+%Typing at this at wsl terminal -> ffmpeg -i example_30.mp4 -vcodec libx264 -acodec aac example_30_converted.mp4 
+
+% Load video
+video = VideoReader('C:\Users\jsks12312\Desktop\PV_measurement\image_processing\example_30_converted.mp4');
+
+
+% Capture multiple frames at a fixed interval
+%frameRate = video.FrameRate;
+%targetTime = 2; % Capture at 2 seconds
+%timeStamps = [targetTime - 00.1, targetTime, targetTime + 00.1];
+videoDuration = video.Duration; % Automatically gets the full video duration
+captureOffset = 0.1; 
+
+% Iterate over the video from 0 to 30 seconds
+for targetTime = 0:1:videoDuration  % Iterate from 0 to 30 seconds at 1s intervals
+    % Generate timestamps for each target second
+    timeStamps = [targetTime - captureOffset, targetTime, targetTime + captureOffset];
+
+    % Iterate over the three timestamps per second
+    for i = 1:length(timeStamps)
+        % Set the video to the desired timestamp
+        video.CurrentTime = timeStamps(i);
+        
+        if hasFrame(video)
+            frame = readFrame(video);
+
+            % Convert to grayscale and preprocess
+            grayFrame = rgb2gray(frame);
+            enhancedFrame = imbinarize(imadjust(grayFrame));
+
+            % Apply OCR to extract numbers
+            result = ocr(enhancedFrame, 'CharacterSet', '0123456789.');
+            
+            % Display extracted text with timestamp
+            disp(['Extracted Text at ', num2str(timeStamps(i), '%.2f'), ' sec: ', strtrim(result.Text)]);
+
+            % Display frame with timestamp
+            figure, imshow(frame);
+            title(['Frame at ', num2str(timeStamps(i), '%.2f'), ' sec']);
+        end
+    end
+end
