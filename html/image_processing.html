@@ -1,0 +1,379 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>image_processing</title><meta name="generator" content="MATLAB 9.11"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2025-03-22"><meta name="DC.source" content="image_processing.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput"><span class="comment">%image processing for PV measurment</span>
+<span class="comment">%Donggeon Kim - u1419226</span>
+<span class="comment">% Optical character recognition (OCR) from Vision toolbox of MATLAB is used</span>
+<span class="comment">% Portions of this script were developed with the assistance of ChatGPT (OpenAI) and MATLAB documentation</span>
+
+
+<span class="comment">% I= imread ('452.png');</span>
+<span class="comment">% result = ocr(I, 'TextLayout', 'Line','characterSet','0123456789');</span>
+<span class="comment">% outputNum=str2double(result.Text);</span>
+
+<span class="comment">% My MP4 file from S25 uses the HEVC (H.265) codec, which is not supported by MATLAB's VideoReader.</span>
+<span class="comment">% MATLAB supports H.264 (AVC) but not HEVC.</span>
+<span class="comment">% Typing at this in WSL terminal -&gt; ffmpeg -i example_30.mp4 -vcodec libx264 -acodec aac example_30_converted.mp4</span>
+
+<span class="comment">% Define paths</span>
+videoFile = <span class="string">'C:\Users\jsks12312\Desktop\PV_measurement\image_processing\example_30_converted.mp4'</span>;
+
+<span class="comment">% Extract video name without extension to create a folder</span>
+[~, videoName, ~] = fileparts(videoFile);
+outputFolder = fullfile(<span class="string">'C:\Users\jsks12312\Desktop\PV_measurement\image_processing\'</span>, videoName);
+
+<span class="comment">% Create output directory if it doesn't exist</span>
+<span class="keyword">if</span> ~exist(outputFolder, <span class="string">'dir'</span>)
+    mkdir(outputFolder);
+<span class="keyword">end</span>
+
+<span class="comment">% Get current date in YYYY_MM_DD format (initialized before filenames are used)</span>
+currentDate = datestr(now, <span class="string">'yyyy_mm_dd'</span>);
+
+<span class="comment">% Initialize extracted data structure before the loop</span>
+extractedData = struct(<span class="string">'Time'</span>, {}, <span class="string">'ExtractedText'</span>, {}, <span class="string">'ImageFile'</span>, {});
+
+<span class="comment">% Open the video file</span>
+video = VideoReader(videoFile);
+
+<span class="comment">% Get the total duration of the video</span>
+videoDuration = min(10, video.Duration); <span class="comment">% Process only up to 10 sec</span>
+
+<span class="comment">% Create a file to save extracted OCR results in the same folder</span>
+ocrResultsFile = fullfile(outputFolder, sprintf(<span class="string">'%s_%s_Extracted_OCR_Results.txt'</span>, currentDate, videoName));
+fileID = fopen(ocrResultsFile, <span class="string">'w'</span>); <span class="comment">% Overwrite previous results</span>
+fprintf(fileID, <span class="string">'Time (s)\tExtracted Text\n'</span>);
+
+<span class="comment">% Define capture interval within each second (&plusmn;0.1s around the target time)</span>
+captureOffset = 0.1;
+
+<span class="comment">% Iterate over the video from 0 to 10 seconds</span>
+<span class="keyword">for</span> targetTime = 0:1:videoDuration  <span class="comment">% Iterate at 1s intervals</span>
+    <span class="comment">% Generate timestamps, ensuring no negative values</span>
+    timeStamps = max(0, [targetTime - captureOffset, targetTime, targetTime + captureOffset]);
+
+    <span class="comment">% Iterate over the three timestamps per second (0.0s, 0.1s, 0.2s, etc.)</span>
+    <span class="keyword">for</span> i = 1:length(timeStamps)
+        <span class="comment">% Set the video to the desired timestamp</span>
+        video.CurrentTime = timeStamps(i);
+
+        <span class="keyword">if</span> hasFrame(video)
+            frame = readFrame(video);
+
+            <span class="comment">% Convert seconds to HH_MM_SS_MMM format (precise video time with milliseconds)</span>
+            totalMilliseconds = round(video.CurrentTime * 1000); <span class="comment">% Convert seconds to milliseconds</span>
+            hours = floor(totalMilliseconds / (3600 * 1000));
+            minutes = floor(mod(totalMilliseconds, (3600 * 1000)) / (60 * 1000));
+            seconds = floor(mod(totalMilliseconds, (60 * 1000)) / 1000);
+            milliseconds = mod(totalMilliseconds, 1000);
+
+            <span class="comment">% Format timestamp as "05h_20m_02s_100ms"</span>
+            <span class="comment">% to meet the format</span>
+            timeStr = sprintf(<span class="string">'%02dh_%02dm_%02ds_%03dms'</span>, hours, minutes, seconds, milliseconds);
+
+            <span class="comment">% save full frame inside the video-named folder for</span>
+            <span class="comment">% organization</span>
+            frameFilename = fullfile(outputFolder, sprintf(<span class="string">'%s_%s_frame_%s.png'</span>, currentDate, videoName, timeStr));
+            imwrite(frame, frameFilename);
+            disp([<span class="string">'Saved full frame at '</span>, num2str(video.CurrentTime, <span class="string">'%.3f'</span>), <span class="string">' sec as '</span>, frameFilename]);
+
+            <span class="comment">% Convert to grayscale and preprocess to help image</span>
+            <span class="comment">% recogniztion</span>
+            grayFrame = rgb2gray(frame);
+            grayFrame = imadjust(grayFrame, [0.3, 0.7], [0, 1]); <span class="comment">% enhance contrast</span>
+            grayFrame = medfilt2(grayFrame, [3, 3]); <span class="comment">% Reduce noise</span>
+
+            <span class="comment">% select region of interest from images</span>
+            <span class="keyword">if</span> targetTime == 0 &amp;&amp; i == 1 <span class="comment">% Only ask for ROI once</span>
+                figure, imshow(frame);
+                title(<span class="string">'Select ROI for Multimeter Display'</span>);
+                roi = round(getrect); <span class="comment">% User selects ROI</span>
+                disp([<span class="string">'Selected ROI: '</span>, num2str(roi)]);
+            <span class="keyword">end</span>
+
+            <span class="comment">% Crop the frame to the ROI - it works at being saved at</span>
+            <span class="comment">% desired location</span>
+            croppedFrame = imcrop(grayFrame, roi);
+
+            <span class="comment">% Save cropped frame in the same folder with precise timestamp</span>
+            croppedFilename = fullfile(outputFolder, sprintf(<span class="string">'%s_%s_cropped_%s.png'</span>, currentDate, videoName, timeStr));
+            imwrite(croppedFrame, croppedFilename);
+            disp([<span class="string">'Saved cropped image at '</span>, num2str(video.CurrentTime, <span class="string">'%.3f'</span>), <span class="string">' sec as '</span>, croppedFilename]);
+
+<span class="comment">%failing point</span>
+            <span class="comment">% apply OCR to the cropped frame</span>
+            result = ocr(croppedFrame, <span class="string">'CharacterSet'</span>, <span class="string">'0123456789.-'</span>);
+            extractedText = strtrim(result.Text);
+
+            <span class="comment">% display extracted text on terminal</span>
+            disp([<span class="string">'Extracted Text at '</span>, num2str(video.CurrentTime, <span class="string">'%.3f'</span>), <span class="string">' sec: '</span>, extractedText]);
+
+            <span class="comment">% save extracted text to file</span>
+            fprintf(fileID, <span class="string">'%.3f\t%s\n'</span>, video.CurrentTime, extractedText);
+
+            <span class="comment">% Store extracted data</span>
+            extractedData(end+1) = struct( <span class="keyword">...</span>
+                <span class="string">'Time'</span>, video.CurrentTime, <span class="keyword">...</span>
+                <span class="string">'ExtractedText'</span>, extractedText, <span class="keyword">...</span>
+                <span class="string">'ImageFile'</span>, croppedFilename);
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="comment">% Close results file</span>
+fclose(fileID);
+
+<span class="comment">% Convert extracted data to a table and display in MATLAB</span>
+<span class="comment">% it needs work</span>
+<span class="keyword">if</span> ~isempty(extractedData)
+    extractedTable = struct2table(extractedData);
+    disp(extractedTable);
+    <span class="comment">% Save extracted data to CSV in the same folder</span>
+    csvFilename = fullfile(outputFolder, sprintf(<span class="string">'%s_%s_Extracted_OCR_Data.csv'</span>, currentDate, videoName));
+    writetable(extractedTable, csvFilename);
+    disp([<span class="string">'OCR results saved to '</span>, csvFilename]);
+<span class="keyword">else</span>
+    disp(<span class="string">'No text was extracted from the video.'</span>);
+<span class="keyword">end</span>
+
+disp(<span class="string">'OCR Processing Complete.'</span>);
+</pre><pre class="codeoutput">Saved full frame at 0.033 sec as C:\Users\jsks12312\Desktop\PV_measurement\image_processing\example_30_converted\2025_03_22_example_30_converted_frame_00h_00m_00s_033ms.png
+</pre><pre class="codeoutput error">Error using getrect (line 167)
+Interruption during mouse selection.
+
+Error in image_processing (line 87)
+                roi = round(getrect); % User selects ROI
+
+Error in evalmxdom&gt;instrumentAndRun (line 114)
+text = evalc(evalstr);
+
+Error in evalmxdom (line 21)
+[data,text,laste] = instrumentAndRun(file,cellBoundaries,imageDir,imagePrefix,options);
+
+Error in publish
+
+Error in connector.internal.fevalMatlab
+
+Error in connector.internal.fevalJSON
+
+Error in matlab.ui.internal.legacyMoveGUI (line 15)
+drawnow
+
+Error in movegui (line 125)
+    matlab.ui.internal.legacyMoveGUI(fig, position);
+
+Error in images.internal.initSize (line 117)
+  movegui(fig_handle,'onscreen');
+
+Error in imshow (line 346)
+    images.internal.initSize(hh,initial_mag/100,is_border_tight)
+
+Error in image_processing (line 85)
+                figure, imshow(frame);
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2021b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+%image processing for PV measurment 
+%Donggeon Kim - u1419226    
+% Optical character recognition (OCR) from Vision toolbox of MATLAB is used
+% Portions of this script were developed with the assistance of ChatGPT (OpenAI) and MATLAB documentation
+
+
+% I= imread ('452.png');
+% result = ocr(I, 'TextLayout', 'Line','characterSet','0123456789');
+% outputNum=str2double(result.Text);
+
+% My MP4 file from S25 uses the HEVC (H.265) codec, which is not supported by MATLAB's VideoReader. 
+% MATLAB supports H.264 (AVC) but not HEVC.
+% Typing at this in WSL terminal -> ffmpeg -i example_30.mp4 -vcodec libx264 -acodec aac example_30_converted.mp4 
+
+% Define paths
+videoFile = 'C:\Users\jsks12312\Desktop\PV_measurement\image_processing\example_30_converted.mp4';
+
+% Extract video name without extension to create a folder
+[~, videoName, ~] = fileparts(videoFile);
+outputFolder = fullfile('C:\Users\jsks12312\Desktop\PV_measurement\image_processing\', videoName);
+
+% Create output directory if it doesn't exist
+if ~exist(outputFolder, 'dir')
+    mkdir(outputFolder);
+end
+
+% Get current date in YYYY_MM_DD format (initialized before filenames are used)
+currentDate = datestr(now, 'yyyy_mm_dd');
+
+% Initialize extracted data structure before the loop
+extractedData = struct('Time', {}, 'ExtractedText', {}, 'ImageFile', {});
+
+% Open the video file
+video = VideoReader(videoFile);
+
+% Get the total duration of the video
+videoDuration = min(10, video.Duration); % Process only up to 10 sec
+
+% Create a file to save extracted OCR results in the same folder
+ocrResultsFile = fullfile(outputFolder, sprintf('%s_%s_Extracted_OCR_Results.txt', currentDate, videoName));
+fileID = fopen(ocrResultsFile, 'w'); % Overwrite previous results
+fprintf(fileID, 'Time (s)\tExtracted Text\n');
+
+% Define capture interval within each second (±0.1s around the target time)
+captureOffset = 0.1;
+
+% Iterate over the video from 0 to 10 seconds
+for targetTime = 0:1:videoDuration  % Iterate at 1s intervals
+    % Generate timestamps, ensuring no negative values
+    timeStamps = max(0, [targetTime - captureOffset, targetTime, targetTime + captureOffset]);
+
+    % Iterate over the three timestamps per second (0.0s, 0.1s, 0.2s, etc.)
+    for i = 1:length(timeStamps)
+        % Set the video to the desired timestamp
+        video.CurrentTime = timeStamps(i);
+
+        if hasFrame(video)
+            frame = readFrame(video);
+            
+            % Convert seconds to HH_MM_SS_MMM format (precise video time with milliseconds)
+            totalMilliseconds = round(video.CurrentTime * 1000); % Convert seconds to milliseconds
+            hours = floor(totalMilliseconds / (3600 * 1000));
+            minutes = floor(mod(totalMilliseconds, (3600 * 1000)) / (60 * 1000));
+            seconds = floor(mod(totalMilliseconds, (60 * 1000)) / 1000);
+            milliseconds = mod(totalMilliseconds, 1000);
+
+            % Format timestamp as "05h_20m_02s_100ms"
+            % to meet the format
+            timeStr = sprintf('%02dh_%02dm_%02ds_%03dms', hours, minutes, seconds, milliseconds);
+
+            % save full frame inside the video-named folder for
+            % organization
+            frameFilename = fullfile(outputFolder, sprintf('%s_%s_frame_%s.png', currentDate, videoName, timeStr));
+            imwrite(frame, frameFilename);
+            disp(['Saved full frame at ', num2str(video.CurrentTime, '%.3f'), ' sec as ', frameFilename]);
+
+            % Convert to grayscale and preprocess to help image
+            % recogniztion
+            grayFrame = rgb2gray(frame);
+            grayFrame = imadjust(grayFrame, [0.3, 0.7], [0, 1]); % enhance contrast
+            grayFrame = medfilt2(grayFrame, [3, 3]); % Reduce noise
+
+            % select region of interest from images
+            if targetTime == 0 && i == 1 % Only ask for ROI once
+                figure, imshow(frame);
+                title('Select ROI for Multimeter Display');
+                roi = round(getrect); % User selects ROI
+                disp(['Selected ROI: ', num2str(roi)]);
+            end
+
+            % Crop the frame to the ROI - it works at being saved at
+            % desired location
+            croppedFrame = imcrop(grayFrame, roi);
+
+            % Save cropped frame in the same folder with precise timestamp
+            croppedFilename = fullfile(outputFolder, sprintf('%s_%s_cropped_%s.png', currentDate, videoName, timeStr));
+            imwrite(croppedFrame, croppedFilename);
+            disp(['Saved cropped image at ', num2str(video.CurrentTime, '%.3f'), ' sec as ', croppedFilename]);
+
+%failing point
+            % apply OCR to the cropped frame
+            result = ocr(croppedFrame, 'CharacterSet', '0123456789.-');
+            extractedText = strtrim(result.Text);
+
+            % display extracted text on terminal
+            disp(['Extracted Text at ', num2str(video.CurrentTime, '%.3f'), ' sec: ', extractedText]);
+
+            % save extracted text to file
+            fprintf(fileID, '%.3f\t%s\n', video.CurrentTime, extractedText);
+
+            % Store extracted data
+            extractedData(end+1) = struct( ...
+                'Time', video.CurrentTime, ...
+                'ExtractedText', extractedText, ...
+                'ImageFile', croppedFilename);
+        end
+    end
+end
+
+% Close results file
+fclose(fileID);
+
+% Convert extracted data to a table and display in MATLAB 
+% it needs work
+if ~isempty(extractedData)
+    extractedTable = struct2table(extractedData);
+    disp(extractedTable);
+    % Save extracted data to CSV in the same folder
+    csvFilename = fullfile(outputFolder, sprintf('%s_%s_Extracted_OCR_Data.csv', currentDate, videoName));
+    writetable(extractedTable, csvFilename);
+    disp(['OCR results saved to ', csvFilename]);
+else
+    disp('No text was extracted from the video.');
+end
+
+disp('OCR Processing Complete.');
+
+##### SOURCE END #####
+--></body></html>
