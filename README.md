@@ -10,4 +10,4 @@ This project makes use of open-source data and processing ideas from the followi
 > A computer vision class project to recognize digits in 7-segment displays.  
 > GitHub repository: [https://github.com/SachaIZADI/Seven-Segment-OCR](https://github.com/SachaIZADI/Seven-Segment-OCR)
 
-We thank the authors for sharing their work.
+thanks
