@@ -12,8 +12,7 @@ This project makes use of open-source data and processing ideas from the followi
 
 thanks
 
-## citation
+## IEEE citation style
 
-If you use this repository or its datasets, please cite the original project:
 
 [1] S. Izadi, A. Momeni, C. Farges, and P. Rebuffel, “Seven-Segment-OCR,” GitHub repository, 2017. [Online]. Available: https://github.com/SachaIZADI/Seven-Segment-OCR
